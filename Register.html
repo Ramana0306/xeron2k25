@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Xeron 2K25 - Register Here</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f4f8fc; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+    .navbar { display: flex; justify-content: center; gap: 20px; background: linear-gradient(to right, #3f51b5, #2196f3); padding: 15px; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+    .nav-item { color: white; font-weight: bold; text-decoration: none; padding: 10px 20px; border-radius: 20px; transition: all 0.3s ease; }
+    .nav-item:hover { background: rgba(255,255,255,0.2); }
+    .form-section { background: white; border-radius: 15px; box-shadow: 0 0 25px rgba(0,0,0,0.05); width: 90%; max-width: 1000px; margin: 40px auto; padding: 50px; text-align: center; }
+    h2, h3 { color: #3f51b5; margin: 10px 0; }
+    .event-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; justify-content: center; margin: 20px 0; }
+    label { display: flex; align-items: center; gap: 8px; background: #e8f0fe; padding: 10px 14px; border-radius: 8px; cursor: pointer; }
+    .user-info input { width: 85%; padding: 15px; margin: 12px auto; border: 1px solid #ccc; border-radius: 8px; display: block; font-size: 16px; }
+    button { width: 50%; background: #3f51b5; border: none; color: white; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s ease; font-size: 16px; margin-top: 15px; }
+    button:hover { background: #2c3da5; }
+    .status-msg { text-align: center; color: green; margin-top: 14px; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a class="nav-item" href="index.html">🏠 Home</a>
+  <a class="nav-item" href="admin.html">🔐 Admin</a>
+</nav>
+
+<section class="form-section">
+  <h2>🚀 Xeron 2K25 - Registration</h2>
+  <p>Select max <b>2 Technical</b> & <b>2 Non-Technical</b> events only!</p>
+
+  <h3>🛠 Technical Events</h3>
+  <div class="event-list" id="tech-events">
+    <label><input type="checkbox" value="InnovateX">InnovateX</label>
+    <label><input type="checkbox" value="CipherEmo">CipherEmo</label>
+    <label><input type="checkbox" value="ScamOrDamn">Scam or Damn</label>
+    <label><input type="checkbox" value="PromptWars">Prompt Wars</label>
+    <label><input type="checkbox" value="CryptoHunt">Crypto Hunt</label>
+  </div>
+
+  <h3>🎉 Non-Technical Events</h3>
+  <div class="event-list" id="nontech-events">
+    <label><input type="checkbox" value="MemeWarz">MemeWarz</label>
+    <label><input type="checkbox" value="AdZap">AdZap</label>
+    <label><input type="checkbox" value="Bid2Win">Bid2Win</label>
+    <label><input type="checkbox" value="CineMaze">CineMaze</label>
+    <label><input type="checkbox" value="BeatBreakOut">BeatBreakOut</label>
+    <label><input type="checkbox" value="ESport">E-Sport</label>
+  </div>
+
+  <h3>👤 Participant Details</h3>
+  <div class="user-info">
+    <input type="text" id="name" placeholder="Your Name" required />
+    <input type="email" id="email" placeholder="Your Email" required />
+    <input type="tel" id="phone" placeholder="Phone Number" required />
+    <input type="text" id="college" placeholder="College Name" required />
+    <input type="text" id="dept" placeholder="Department" required />
+    <input type="text" id="year" placeholder="Year of Study" required />
+  </div>
+
+  <button id="submitBtn">Submit Registration</button>
+  <p id="form-status" class="status-msg"></p>
+</section>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAC_W7HlVyaBSH1kkGchhs4Xg3iz4J4068",
+    authDomain: "xeronsymposium2025-aa9e4.firebaseapp.com",
+    projectId: "xeronsymposium2025-aa9e4",
+    storageBucket: "xeronsymposium2025-aa9e4.appspot.com",
+    messagingSenderId: "842011624500",
+    appId: "1:842011624500:web:687bb0afaae2a53584f661"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  function limitCheckbox(groupId, max) {
+    const checkboxes = document.querySelectorAll(`#${groupId} input[type='checkbox']`);
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        const checked = [...checkboxes].filter(c => c.checked);
+        if (checked.length > max) {
+          cb.checked = false;
+          alert(`⚠️ You can only select ${max} events in this section.`);
+        }
+      });
+    });
+  }
+
+  limitCheckbox('tech-events', 2);
+  limitCheckbox('nontech-events', 2);
+
+  document.getElementById("submitBtn").addEventListener("click", () => {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const college = document.getElementById("college").value.trim();
+    const dept = document.getElementById("dept").value.trim();
+    const year = document.getElementById("year").value.trim();
+
+    const tech = [...document.querySelectorAll('#tech-events input:checked')].map(cb => cb.value);
+    const nontech = [...document.querySelectorAll('#nontech-events input:checked')].map(cb => cb.value);
+
+    if (!name || !email || !phone || !college || !dept || !year || tech.length === 0 && nontech.length === 0) {
+      alert("⚠️ Please fill all fields and select at least one event.");
+      return;
+    }
+
+    const data = {
+      name, email, phone, college, dept, year,
+      technicalEvents: tech,
+      nonTechnicalEvents: nontech,
+      timestamp: new Date().toISOString()
+    };
+
+    push(ref(db, "registrations"), data)
+      .then(() => {
+        document.getElementById("form-status").textContent = "✅ Registered Successfully!";
+        document.querySelectorAll('input').forEach(el => {
+          if (el.type === 'checkbox') el.checked = false;
+          else el.value = '';
+        });
+      })
+      .catch(err => alert("❌ Error: " + err));
+  });
+</script>
+
+</body>
+</html>

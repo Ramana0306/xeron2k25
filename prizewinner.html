@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xeron 2K25 | Prize Winners Live</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 { margin-bottom: 20px; }
+    .marquee {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      border: 2px solid #fff;
+      padding: 10px;
+      margin: 20px 0;
+      background: rgba(255,255,255,0.1);
+    }
+    .marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 15s linear infinite;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100%); }
+    }
+    .winner-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+    .winner-card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 15px;
+      width: 260px;
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+
+<h1>🏆 Xeron 2K25 - Live Prize Winners</h1>
+
+<div class="marquee">
+  <span id="announcementText">Waiting for live announcements...</span>
+</div>
+
+<div class="winner-list" id="winnerList">
+
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAC_W7HlVyaBSH1kkGchhs4Xg3iz4J4068",
+    authDomain: "xeronsymposium2025-aa9e4.firebaseapp.com",
+    databaseURL: "https://xeronsymposium2025-aa9e4-default-rtdb.firebaseio.com",
+    projectId: "xeronsymposium2025-aa9e4",
+    storageBucket: "xeronsymposium2025-aa9e4.appspot.com",
+    messagingSenderId: "842011624500",
+    appId: "1:842011624500:web:687bb0afaae2a53584f661"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const winnerList = document.getElementById('winnerList');
+  const announcementText = document.getElementById('announcementText');
+
+  db.ref('winners').on('value', (snapshot) => {
+    const data = snapshot.val();
+    winnerList.innerHTML = '';
+
+    let announcement = "🎉 Prize Winners: ";
+    for (const key in data) {
+      const item = data[key];
+      const card = document.createElement('div');
+      card.className = 'winner-card';
+      card.innerHTML = `
+        <h3>${item.event}</h3>
+        <p>🥇 Winner: <strong>${item.winner}</strong></p>
+        <p>🥈 Runner-Up: <strong>${item.runner}</strong></p>`;
+      winnerList.appendChild(card);
+      announcement += `${item.event} 🥇 ${item.winner} | 🥈 ${item.runner} || `;
+    }
+    announcementText.textContent = announcement || "No winners announced yet!";
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xeron 2K25 Admin Panel</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f4f8fc; margin: 0; padding: 0; }
+    .navbar { display: flex; justify-content: center; gap: 20px; background: linear-gradient(to right, #3f51b5, #2196f3); padding: 15px; }
+    .nav-item { color: white; text-decoration: none; font-weight: bold; }
+    .nav-item:hover { text-decoration: underline; }
+    .container { max-width: 800px; margin: 20px auto; background: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    input, select { padding: 10px; margin: 5px; width: 200px; border-radius: 5px; border: 1px solid #ccc; }
+    button { padding: 10px 20px; background: #3f51b5; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #2c3da5; }
+    .counts { margin: 20px 0; }
+    .dial { width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, #2196f3, #3f51b5);
+            display: flex; justify-content: center; align-items: center; flex-direction: column; color: white;
+            font-size: 18px; box-shadow: 0 0 15px rgba(0,0,0,0.3); margin: 0 auto 20px; }
+    .dial span { font-size: 36px; font-weight: bold; }
+    ul { list-style: none; padding: 0; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@7.7.0/build/index.min.js"></script>
+  
+</head>
+<body>
+
+<nav class="navbar">
+  <a class="nav-item" href="index.html">🏠 Home</a>
+  <a class="nav-item" href="prizewinner.html">🏆 Prize Winners</a>
+</nav>
+
+<div class="container" id="loginSection">
+  <h2>Admin Login</h2>
+  <input type="email" id="adminEmail" placeholder="Admin Email" /><br>
+  <input type="password" id="adminPassword" placeholder="Password" /><br>
+  <button onclick="adminLogin()">Login</button>
+</div>
+
+<div class="container" id="adminPanel" style="display:none;">
+  <h2>Welcome Admin 🎉</h2>
+  <div id="counts"></div>
+
+  <h3>Post or Delete Winner & Runner</h3>
+  <select id="eventName">
+    <option value="">Select Event</option>
+    <option>InnovateX</option><option>CipherEmo</option><option>Scam or Damn</option>
+    <option>Prompt Wars</option><option>Crypto Hunt</option>
+    <option>MemeWarz</option><option>AdZap</option><option>Bid2Win</option>
+    <option>CineMaze</option><option>Beat-Break-Out</option><option>E-Sport</option>
+  </select><br>
+  <input type="text" id="winnerName" placeholder="Winner Name" />
+  <input type="text" id="runnerName" placeholder="Runner Name" />
+  <button id="postOrDeleteBtn" disabled>Select Event</button>
+
+  <h3>View Event Participants</h3>
+  <select id="viewEvent"></select>
+  <button onclick="viewParticipants()">View Participants</button>
+  <ul id="participantList"></ul>
+  <button onclick="downloadCSV()">⬇️ Download Participant CSV</button>
+
+  <h3>Download All Winners & Runners CSV</h3>
+  <button onclick="downloadWinnersCSV()">⬇️ Download Winners CSV</button>
+
+  <h3>Word Document Downloads</h3>
+<button onclick="downloadParticipantWord()">⬇️ Download Participants Word</button>
+<button onclick="downloadWinnersWord()">⬇️ Download Winners Word</button>
+
+
+  <h3>Manage Live YouTube Stream</h3>
+  <input type="text" id="youtubeLink" placeholder="Enter YouTube Live Video ID" />
+  <button onclick="postLiveStream()">Post Live Stream</button>
+  <button onclick="deleteLiveStream()">Delete Live Stream</button>
+
+  <h3>Manage Live Photo Slider</h3>
+  <input type="text" id="sliderImageURL" placeholder="Image URL (public link)" />
+  <input type="text" id="sliderImageDesc" placeholder="Short Description" />
+  <button onclick="addSliderImage()">Add to Slider</button>
+  <ul id="sliderList"></ul>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAC_W7HlVyaBSH1kkGchhs4Xg3iz4J4068",
+  authDomain: "xeronsymposium2025-aa9e4.firebaseapp.com",
+  projectId: "xeronsymposium2025-aa9e4",
+  storageBucket: "xeronsymposium2025-aa9e4.appspot.com",
+  messagingSenderId: "842011624500",
+  appId: "1:842011624500:web:687bb0afaae2a53584f661"
+};
+firebase.initializeApp(firebaseConfig);
+
+function adminLogin() {
+  const email = document.getElementById("adminEmail").value;
+  const password = document.getElementById("adminPassword").value;
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(() => {
+      alert("✅ Login Successful!");
+      document.getElementById("loginSection").style.display = "none";
+      document.getElementById("adminPanel").style.display = "block";
+      loadCounts(); populateDropdown(); checkWinnerStatus(); loadSliderImages();
+    })
+    .catch(error => alert("❌ Login Failed: " + error.message));
+}
+
+function checkWinnerStatus() {
+  const event = document.getElementById("eventName").value;
+  const btn = document.getElementById("postOrDeleteBtn");
+  if (!event) { btn.textContent = "Select Event"; btn.disabled = true; return; }
+  firebase.database().ref("winners/" + event).get().then(snapshot => {
+    btn.textContent = snapshot.exists() ? "Delete Result" : "Post Result";
+    btn.onclick = snapshot.exists() ? () => deleteWinner(event) : postResults;
+    btn.disabled = false;
+  });
+}
+
+function postResults() {
+  const event = document.getElementById("eventName").value;
+  const winner = document.getElementById("winnerName").value;
+  const runner = document.getElementById("runnerName").value;
+  if (!event || !winner || !runner) return alert("⚠️ Fill all fields!");
+  firebase.database().ref("winners/" + event).set({ event, winner, runner })
+    .then(() => { alert("✅ Winner & Runner posted!"); checkWinnerStatus(); })
+    .catch(err => alert("❌ Error: " + err));
+}
+
+function deleteWinner(event) {
+  firebase.database().ref("winners/" + event).remove()
+    .then(() => {
+      alert("🗑 Winner & Runner deleted!");
+      document.getElementById("winnerName").value = "";
+      document.getElementById("runnerName").value = "";
+      checkWinnerStatus();
+    }).catch(err => alert("❌ Error deleting: " + err));
+}
+
+function populateDropdown() {
+  const select = document.getElementById("viewEvent");
+  const events = ["InnovateX","CipherEmo","Scam or Damn","Prompt Wars","Crypto Hunt","MemeWarz","AdZap","Bid2Win","CineMaze","Beat-Break-Out","E-Sport"];
+  select.innerHTML = "<option value=''>Select Event</option>";
+  events.forEach(event => select.innerHTML += `<option>${event}</option>`);
+}
+
+function viewParticipants() {
+  const event = document.getElementById("viewEvent").value;
+  const list = document.getElementById("participantList");
+  if (!event) return alert("Select event!");
+  list.innerHTML = "Loading...";
+  firebase.database().ref("registrations").once("value").then(snapshot => {
+    let html = "", count = 0;
+    snapshot.forEach(child => {
+      const data = child.val();
+      if ((data.technicalEvents || []).includes(event) || (data.nonTechnicalEvents || []).includes(event)) {
+        count++;
+        html += `<li>${data.name} (${data.college})</li>`;
+      }
+    });
+    list.innerHTML = html || "<li>No participants found.</li>";
+    alert(`Participants for ${event}: ${count}`);
+  });
+}
+
+function downloadCSV() {
+  const event = document.getElementById("viewEvent").value;
+  if (!event) return alert("⚠️ Select an event first!");
+
+  firebase.database().ref("registrations").once("value").then(snapshot => {
+    let csv = "Name,College,Phone,Email,Events Participated\n";
+    let count = 0;
+
+    snapshot.forEach(child => {
+      const data = child.val();
+      const allEvents = [...(data.technicalEvents || []), ...(data.nonTechnicalEvents || [])];
+      if (allEvents.includes(event)) {
+        count++;
+        csv += `${data.name},${data.college},${data.phone},${data.email},"${allEvents.join(', ')}"\n`;
+      }
+    });
+
+    if (count === 0) {
+      alert(`⚠️ No participants found for ${event}.`);
+      return;
+    }
+
+    csv += `\nTotal Participants: ${count}`;
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${event}_participants.csv`;
+    a.click();
+  });
+}
+
+function downloadWinnersCSV() {
+  firebase.database().ref("winners").once("value").then(snapshot => {
+    let csv = "Event,Winner Name,Winner College,Winner Phone,Winner Email,Runner Name,Runner College,Runner Phone,Runner Email\n";
+
+    const promises = [];
+    snapshot.forEach(child => {
+      const data = child.val();
+      promises.push(
+        Promise.all([
+          firebase.database().ref("registrations").orderByChild("name").equalTo(data.winner).once("value"),
+          firebase.database().ref("registrations").orderByChild("name").equalTo(data.runner).once("value")
+        ]).then(([winnerSnap, runnerSnap]) => {
+          let winnerInfo = ["N/A", "N/A", "N/A"];
+          let runnerInfo = ["N/A", "N/A", "N/A"];
+
+          winnerSnap.forEach(w => {
+            const wd = w.val();
+            winnerInfo = [wd.college, wd.phone, wd.email];
+          });
+
+          runnerSnap.forEach(r => {
+            const rd = r.val();
+            runnerInfo = [rd.college, rd.phone, rd.email];
+          });
+
+          csv += `${data.event},${data.winner},${winnerInfo[0]},${winnerInfo[1]},${winnerInfo[2]},${data.runner},${runnerInfo[0]},${runnerInfo[1]},${runnerInfo[2]}\n`;
+        })
+      );
+    });
+
+    Promise.all(promises).then(() => {
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = "winners_details.csv";
+      a.click();
+    });
+  });
+}
+
+
+function loadCounts() {
+  firebase.database().ref("registrations").on("value", snapshot => {
+    const total = snapshot.numChildren();
+    document.getElementById("counts").innerHTML = `<div class="dial"><span>${total}</span><div>Total Participants</div></div>`;
+  });
+}
+
+function postLiveStream() {
+  const videoId = document.getElementById('youtubeLink').value.trim();
+  if (!videoId) return alert("⚠️ Please enter a valid YouTube Video ID!");
+  firebase.database().ref("liveStream").set({ videoId })
+    .then(() => alert("✅ Live Stream Posted!"))
+    .catch(err => alert("❌ Error: " + err));
+}
+
+function deleteLiveStream() {
+  firebase.database().ref("liveStream").remove()
+    .then(() => alert("🗑 Live Stream Removed!"))
+    .catch(err => alert("❌ Error deleting: " + err));
+}
+
+function addSliderImage() {
+  let url = document.getElementById('sliderImageURL').value.trim();
+  const desc = document.getElementById('sliderImageDesc').value.trim();
+
+  const match = url.match(/(?:\/d\/|id=)([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    url = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  }
+
+  if (!url || !desc) return alert("⚠️ Please enter both URL and description!");
+  firebase.database().ref("liveGallery").push({ url, desc, type: "image" })
+    .then(() => { 
+      alert("✅ Image Added!"); 
+      loadSliderImages(); 
+      document.getElementById('sliderImageURL').value = "";
+      document.getElementById('sliderImageDesc').value = "";
+    })
+    .catch(err => alert("❌ Error: " + err));
+}
+
+
+
+function loadSliderImages() {
+  const list = document.getElementById("sliderList");
+  list.innerHTML = "Loading...";
+  firebase.database().ref("liveGallery").once("value").then(snapshot => {
+    let html = "";
+    snapshot.forEach(child => {
+      const data = child.val();
+      html += `<li>${data.desc} <button onclick="deleteSliderImage('${child.key}')">Delete</button></li>`;
+    });
+    list.innerHTML = html || "<li>No images found.</li>";
+  });
+}
+
+function deleteSliderImage(key) {
+  firebase.database().ref("liveGallery/" + key).remove()
+    .then(() => { alert("🗑 Image Deleted!"); loadSliderImages(); })
+    .catch(err => alert("❌ Error: " + err));
+}
+
+document.getElementById("eventName").addEventListener("change", checkWinnerStatus);
+document.getElementById("eventName").addEventListener("change", checkWinnerStatus);
+
+// Paste here:
+async function downloadParticipantWord() {
+  const { Document, Packer, Paragraph, Table, TableCell, TableRow, TextRun } = window.docx;
+  const tableRows = [
+    new TableRow({
+      children: [
+        new TableCell({ children: [new Paragraph("S.No")] }),
+        new TableCell({ children: [new Paragraph("Name")] }),
+        new TableCell({ children: [new Paragraph("College")] }),
+        new TableCell({ children: [new Paragraph("Department")] }),
+        new TableCell({ children: [new Paragraph("Phone")] }),
+        new TableCell({ children: [new Paragraph("Events Participated")] }),
+      ]
+    })
+  ];
+  let count = 0;
+  const snapshot = await firebase.database().ref("registrations").once("value");
+  snapshot.forEach(child => {
+    const data = child.val();
+    count++;
+    tableRows.push(new TableRow({
+      children: [
+        new TableCell({ children: [new Paragraph(String(count))] }),
+        new TableCell({ children: [new Paragraph(data.name || "N/A")] }),
+        new TableCell({ children: [new Paragraph(data.college || "N/A")] }),
+        new TableCell({ children: [new Paragraph(data.department || "N/A")] }),
+        new TableCell({ children: [new Paragraph(data.phone || "N/A")] }),
+        new TableCell({ children: [new Paragraph((data.technicalEvents || []).concat(data.nonTechnicalEvents || []).join(", "))] }),
+      ]
+    }));
+  });
+  const doc = new Document({
+    sections: [{ children: [new Paragraph("Xeron 2K25 - Registered Participants"), new Table({ rows: tableRows })] }]
+  });
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, "Participants_List.docx");
+}
+
+function downloadWinnersWord() {
+  firebase.database().ref("winners").once("value").then(snapshot => {
+    const { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType } = docx;
+    const rows = [];
+
+    rows.push(new TableRow({
+      children: [
+        new TableCell({ children: [new Paragraph("Event")] }),
+        new TableCell({ children: [new Paragraph("Winner Name")] }),
+        new TableCell({ children: [new Paragraph("Winner College")] }),
+        new TableCell({ children: [new Paragraph("Winner Phone")] }),
+        new TableCell({ children: [new Paragraph("Winner Email")] }),
+        new TableCell({ children: [new Paragraph("Runner Name")] }),
+        new TableCell({ children: [new Paragraph("Runner College")] }),
+        new TableCell({ children: [new Paragraph("Runner Phone")] }),
+        new TableCell({ children: [new Paragraph("Runner Email")] }),
+      ]
+    }));
+
+    const promises = [];
+
+    snapshot.forEach(child => {
+      const data = child.val();
+      const winnerRef = firebase.database().ref("registrations").orderByChild("name").equalTo(data.winner).once("value");
+      const runnerRef = firebase.database().ref("registrations").orderByChild("name").equalTo(data.runner).once("value");
+
+      promises.push(
+        Promise.all([winnerRef, runnerRef]).then(([winnerSnap, runnerSnap]) => {
+          let winnerInfo = ["N/A", "N/A", "N/A"];
+          let runnerInfo = ["N/A", "N/A", "N/A"];
+
+          winnerSnap.forEach(w => {
+            const wd = w.val();
+            winnerInfo = [wd.college || "N/A", wd.phone || "N/A", wd.email || "N/A"];
+          });
+
+          runnerSnap.forEach(r => {
+            const rd = r.val();
+            runnerInfo = [rd.college || "N/A", rd.phone || "N/A", rd.email || "N/A"];
+          });
+
+          rows.push(new TableRow({
+            children: [
+              new TableCell({ children: [new Paragraph(data.event)] }),
+              new TableCell({ children: [new Paragraph(data.winner)] }),
+              new TableCell({ children: [new Paragraph(winnerInfo[0])] }),
+              new TableCell({ children: [new Paragraph(winnerInfo[1])] }),
+              new TableCell({ children: [new Paragraph(winnerInfo[2])] }),
+              new TableCell({ children: [new Paragraph(data.runner)] }),
+              new TableCell({ children: [new Paragraph(runnerInfo[0])] }),
+              new TableCell({ children: [new Paragraph(runnerInfo[1])] }),
+              new TableCell({ children: [new Paragraph(runnerInfo[2])] }),
+            ]
+          }));
+        })
+      );
+    });
+
+    Promise.all(promises).then(() => {
+      const doc = new Document({
+        sections: [{ children: [new Table({ rows })] }]
+      });
+      Packer.toBlob(doc).then(blob => saveAs(blob, "Winners_Details.docx"));
+    });
+  });
+}
+
+
+
+</script>
+</body>
+</html>

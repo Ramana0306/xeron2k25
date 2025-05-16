@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Xeron Symposium</title>
+  <link rel="icon" href="logo-removebg-preview.png" type="image/png" />
+  <link rel="stylesheet" href="styles.css" />
+  <script type="module" src="app.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .live-gallery {
+      width: 100%;
+      overflow: hidden;
+      background: url('trans.png') center center / cover no-repeat;
+      padding: 20px 0;
+      position: relative;
+    }
+    .live-gallery::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:linear-gradient(90deg, #3f51b5, #e91e63);
+      z-index: 0;
+    }
+    .slider {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      will-change: transform;
+      position: relative;
+      z-index: 1;
+    }
+    .slider.animate {
+      animation: scroll 30s linear infinite;
+    }
+    .slider-item {
+      flex: 0 0 auto;
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      width: 250px;
+      height: 250px;
+      background: #555;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .slider-item img, .slider-item iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+  display: block;
+}
+    .slider-item .desc {
+      position: absolute;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      width: 100%;
+      color: white;
+      text-align: center;
+      padding: 8px;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .slider-item:hover .desc {
+      opacity: 1;
+    }
+    @keyframes scroll {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    @media (max-width: 768px) {
+      .slider-item {
+        width: 90vw;
+        height: 180px;
+      }
+      .slider-item img, .slider-item iframe {
+        max-height: 180px;
+        width: 90vw;
+      }
+      @media (max-width: 768px) {
+  .slider.animate {
+    animation: scroll 45s linear infinite;
+  }
+}
+
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="topbar">
+    <div class="logo-title">
+      <img src="logo-removebg-preview.png" alt="Xeron Logo" class="site-logo">
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <h1 style="margin: 0;">TECHSAGE PRESENTS</h1>
+        <h1 style="margin: 0;">XERON SYMPOSIUM 2K25</h1>
+      </div>
+    </div>
+    
+    <marquee>🚀 The Future Has Arrived!! Are You Ready? | Limited Slots Available! | Register Now! 🎉</marquee>
+  </div>
+   
+ 
+  
+</header>
+
+<nav class="navbar">
+  <div id="menu-toggle" class="menu-toggle">&#9776;</div>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li class="dropdown">
+      <a href="#">Technical Events</a>
+      <ul class="dropdown-content">
+        <li><a href="innovatex.html">InnovateX</a></li>
+        <li><a href="cipheremo.html">CipherEmo</a></li>
+        <li><a href="scamordam.html">Scam or Damn</a></li>
+        <li><a href="promptwars.html">Prompt Wars</a></li>
+        <li><a href="cryptohunt.html">Crypto Hunt</a></li>
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a href="#">Non-Technical Events</a>
+      <ul class="dropdown-content">
+        <li><a href="MemeWarz.html">MemeWarz</a></li>
+        <li><a href="AdZap.html">AdZap</a></li>
+        <li><a href="Bid2Win.html">Bid2Win</a></li>
+        <li><a href="CineMaze.html">CineMaze</a></li>
+        <li><a href="BeatBreakOut.html">BeatBreakOut</a></li>
+        <li><a href="ESport.html">E-Sport</a></li>
+      </ul>
+    </li>
+    <li><a href="venue.html">Venue</a></li>
+    <li><a href="live.html">Live Stream</a></li>
+    <li><a href="prizewinner.html">Prize Winners</a></li>
+    <li><a href="Register.html">Register Here</a></li>
+    <li><a href="admin.html">Admin Login</a></li>
+  </ul>
+</nav>
+
+
+<section class="live-gallery">
+  <div class="slider" id="mediaSlider"></div>
+</section>
+
+<section class="countdown-section">
+  <h2>🚀 Countdown to Xeron 2K25!</h2>
+  <div id="countdown">
+    <div class="time-circle">
+      <span id="days">00</span>
+      <p>Days</p>
+    </div>
+    <div class="time-circle">
+      <span id="hours">00</span>
+      <p>Hours</p>
+    </div>
+    <div class="time-circle">
+      <span id="minutes">00</span>
+      <p>Minutes</p>
+    </div>
+    <div class="time-circle">
+      <span id="seconds">00</span>
+      <p>Seconds</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .countdown-section {
+    text-align: center;
+    background: #eef4fc;
+    padding: 40px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    margin: 30px auto;
+  }
+
+  .countdown-section h2 {
+    color: #3f51b5;
+    margin-bottom: 25px;
+  }
+
+  #countdown {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+
+  .time-circle {
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, #2196f3, #3f51b5);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  }
+
+  .time-circle span {
+    font-size: 32px;
+    font-weight: bold;
+  }
+
+  .time-circle p {
+    margin: 5px 0 0;
+    font-size: 14px;
+  }
+
+  @media (max-width: 768px) {
+    .time-circle {
+      width: 90px;
+      height: 90px;
+    }
+    .time-circle span {
+      font-size: 24px;
+    }
+  }
+</style>
+
+<script>
+  const eventDate = new Date("2025-04-17T00:00:00").getTime();  // Update event date & time here
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = eventDate - now;
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.getElementById('days').innerText = days.toString().padStart(2, '0');
+    document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+    document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+    document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+
+    if (distance < 0) {
+      clearInterval(timerInterval);
+      document.getElementById('countdown').innerHTML = `<div style="color:#3f51b5;font-size:24px;">🎉 Event Started!</div>`;
+    }
+  }
+
+  const timerInterval = setInterval(updateCountdown, 1000);
+</script>
+
+
+<section class="about">
+  <h2>About Xeron</h2>
+  <p>
+    Welcome to Planet Xeron! An electrifying national-level technical symposium presented by TechSage.
+    Dive into a universe of creativity, innovation, and fun with both technical and non-technical events designed to spark your imagination and test your skills.
+  </p>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinks = document.getElementById('nav-links');
+
+    menuToggle.addEventListener('click', function() {
+      navLinks.classList.toggle('show');
+    });
+
+    const dropdownLinks = document.querySelectorAll('.dropdown > a');
+    dropdownLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+          e.preventDefault();
+          this.nextElementSibling.classList.toggle('show');
+        }
+      });
+    });
+  });
+</script>
+<section class="faculty-message">
+  <h2>Message from our Principal</h2>
+  <div class="message-card">
+    <img src="principal.jpg" alt="Faculty Photo">
+    
+    <div class="message-text">
+      <p>
+        A warm welcome to all at the XERON Symposium!
+This platform celebrates innovation, knowledge sharing, and creative thinking.
+May your ideas ignite new paths for research and growth.
+Let’s learn, collaborate, and inspire each other.
+Wishing everyone a successful and memorable symposium experience!
+      </p>
+      <p><strong><br>- Dr. M. Sekar, M.E., Ph.D., (S.Korea), FIE
+       </strong><br> PRINCIPAL, AAA College of Engineering & Technology</p>
+    </div>
+    <img src="clogo.jpeg" alt="college logo" style="align-items: end; border-radius: 0%;">
+  </div>
+</section>
+
+<section class="faculty-message">
+  <h2>Message from our HOD</h2>
+  <div class="message-card">
+    <img src="hod.png" alt="Faculty Photo">
+    <div class="message-text">
+      <p>
+        Welcome to Xeron 2K25!  
+        We are proud to host brilliant minds from across the country.  
+        Your creativity, passion, and innovation are the true heart of this symposium.  
+        Let's make it unforgettable!
+      </p>
+      <p><strong><br>- Dr. R Raja Guru</strong><br>Head of Department, TechSage</p>
+    </div>
+  </div>
+</section>
+
+<section class="office-bearers">
+  <h2>Meet our Office Bearers</h2>
+
+  <div class="bearer-slider-wrapper">
+    <div class="bearer-slider row1">
+      <!-- Row 1: 9 cards -->
+      <div class="bearer-card">
+        <div class="card-inner">
+          <div class="card-front">
+            <strong>Mr. S Parthiban</strong>
+            <p>President</p>
+          </div>
+          <div class="card-back">
+            <p>Leading with Vision!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bearer-card">
+        <div class="card-inner">
+          <div class="card-front">
+            <strong>Ms. Harini</strong>
+            <p>Vice President</p>
+          </div>
+          <div class="card-back">
+            <p>Supporting Every Step!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bearer-card">
+        <div class="card-inner">
+          <div class="card-front">
+            <strong>Ms. Supriyaa Padmashini K</strong>
+            <p>Secretary</p>
+          </div>
+          <div class="card-back">
+            <p>Managing Funds Smartly!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bearer-card">
+        <div class="card-inner">
+          <div class="card-front">
+            <strong>Mr. Hari Hara Priyan </strong>
+            <p>Join Secretary</p>
+          </div>
+          <div class="card-back">
+            <p>Crafting Memorable Events!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bearer-card">
+        <div class="card-inner">
+          <div class="card-front">
+            <strong>Mr. A Antony Nithin</strong>
+            <p>Treasures</p>
+          </div>
+          <div class="card-back">
+            <p>Bringing Visual Magic!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bearer-card">
+        <div class="card-inner">
+          <div class="card-front">
+            <strong>Ms. Mohana Priya R</strong>
+            <p>Treasures</p>
+          </div>
+          <div class="card-back">
+            <p>Building Connections!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bearer-card">
+        <div class="card-inner">
+          <div class="card-front">
+            <strong>Ms. Akalya</strong>
+            <p>Treasuress</p>
+          </div>
+          <div class="card-back">
+            <p>Keeping Everything Safe!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bearer-card">
+        <div class="card-inner">
+          <div class="card-front">
+            <strong>Mr. Imran Khan</strong>
+            <p>Event Coordinators</p>
+          </div>
+          <div class="card-back">
+            <p>Planning Seamlessly!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bearer-card">
+        <div class="card-inner">
+          <div class="card-front">
+            <strong>Mr.Vishal A</strong>
+            <p>Public Relations Officer</p>
+          </div>
+          <div class="card-back">
+            <p>Powering Tech Magic!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bearer-slider-wrapper">
+    <div class="bearer-slider row2">
+      <!-- Row 2: 9 cards -->
+      <div class="bearer-card"><div class="card-inner"><div class="card-front"><strong>Mr. Ramana M</strong><p>Technical Head</p></div><div class="card-back"><p>Words Create Worlds!</p></div></div></div>
+      <div class="bearer-card"><div class="card-inner"><div class="card-front"><strong>Ms. Astra Shylin</strong><p>Member Liasion</p></div><div class="card-back"><p>Master of Schedules!</p></div></div></div>
+      <div class="bearer-card"><div class="card-inner"><div class="card-front"><strong>Mr. Aslam</strong><p>Media Head</p></div><div class="card-back"><p>Spreading the Buzz!</p></div></div></div>
+      <div class="bearer-card"><div class="card-inner"><div class="card-front"><strong>Mr. Vijayakumar V</strong><p>Design Head</p></div><div class="card-back"><p>Leading with Energy!</p></div></div></div>
+      <div class="bearer-card"><div class="card-inner"><div class="card-front"><strong>Mr. Kishore Kumar</strong><p>Cultural Head</p></div><div class="card-back"><p>Coordinating Excellence!</p></div></div></div>
+      <div class="bearer-card"><div class="card-inner"><div class="card-front"><strong>Mr.Aravindhan</strong><p>Cultural Head</p></div><div class="card-back"><p>Protecting Rights!</p></div></div></div>
+      <div class="bearer-card"><div class="card-inner"><div class="card-front"><strong>Mr. Sanjay Guru</strong><p>content Writers</p></div><div class="card-back"><p>Crafting Stories!</p></div></div></div>
+      <div class="bearer-card"><div class="card-inner"><div class="card-front"><strong>Ms. Ramya</strong><p>content Writers</p></div><div class="card-back"><p>Connecting People!</p></div></div></div>
+      <div class="bearer-card"><div class="card-inner"><div class="card-front"><strong>Mr. Prem Kumar</strong><p>Event Coordinator</p></div><div class="card-back"><p>Supporting Our Team!</p></div></div></div>
+    </div>
+  </div>
+</section>
+<style>
+.office-bearers {
+  padding: 40px 20px;
+  background: #eef4fc;
+  text-align: center;
+}
+.office-bearers h2 {
+  color: #3f51b5;
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+.bearer-slider-wrapper {
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 30px;
+}
+.bearer-slider {
+  display: flex;
+  gap: 40px;
+  will-change: transform;
+  animation-play-state: running;
+}
+.bearer-card {
+  width: 200px;
+  height: 120px;
+  perspective: 1000px;
+  flex: 0 0 auto;
+}
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+.bearer-card:hover .card-inner {
+  transform: rotateY(180deg);
+}
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  background: #3f51b5;
+  font-size: 14px;
+  padding: 10px;
+  flex-direction: column;
+}
+.card-front strong {
+  font-size: 16px;
+}
+.card-back {
+  transform: rotateY(180deg);
+  background: #283593;
+}
+.bearer-slider-wrapper::before, .bearer-slider-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.bearer-slider-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, #eef4fc 0%, rgba(238,244,252,0) 100%);
+}
+.bearer-slider-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, #eef4fc 0%, rgba(238,244,252,0) 100%);
+}
+.bearer-slider-wrapper:hover .bearer-slider {
+  animation-play-state: paused;
+}
+.row1 {
+  animation: scroll-left 40s linear infinite;
+}
+.row2 {
+  animation: scroll-right 40s linear infinite;
+}
+@keyframes scroll-left {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-110%); }
+}
+@keyframes scroll-right {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Mobile Specific Changes */
+@media (max-width: 768px) {
+  .bearer-slider {
+    gap: 16px;
+  }
+  .bearer-card {
+    width: 85vw;
+    height: auto;
+    flex: 0 0 auto;
+  }
+  .card-inner {
+    min-height: 100px;
+  }
+  .card-front strong {
+    font-size: 18px;
+  }
+  .card-front p,
+  .card-back p {
+    font-size: 13px;
+  }
+}
+
+</style>
+
+
+ 
+
+
+<style>
+  .faculty-message {
+    text-align: center;
+    background: #eef4fc;
+    padding: 40px 20px;
+    border-radius: 12px;
+    margin: 30px auto;
+    max-width: 900px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+  .faculty-message h2 {
+    color: #3f51b5;
+    margin-bottom: 20px;
+  }
+  .message-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .message-card img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+  }
+  .message-card img:hover {
+    transform: scale(1.05);
+  }
+  .message-text {
+    max-width: 500px;
+    text-align: left;
+  }
+  .message-text p {
+    margin: 8px 0;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .message-text strong {
+    color: #2c3da5;
+  }
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAC_W7HlVyaBSH1kkGchhs4Xg3iz4J4068",
+    authDomain: "xeronsymposium2025-aa9e4.firebaseapp.com",
+    projectId: "xeronsymposium2025-aa9e4",
+    storageBucket: "xeronsymposium2025-aa9e4.appspot.com",
+    messagingSenderId: "842011624500",
+    appId: "1:842011624500:web:687bb0afaae2a53584f661",
+    measurementId: "G-XB0JPMYMYB"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  const slider = document.getElementById('mediaSlider');
+
+  firebase.database().ref('liveGallery').on('value', snapshot => {
+    slider.innerHTML = '';
+    let count = 0;
+    snapshot.forEach(item => {
+      const data = item.val();
+      let element = '';
+      if (data.type === 'image') {
+        element = `
+          <div class="slider-item">
+            <img src="${data.url}" alt="Event Image">
+            <div class="desc">${data.desc}</div>
+          </div>`;
+      } else if (data.type === 'video') {
+        element = `
+          <div class="slider-item">
+            <iframe src="${data.url}" frameborder="0" allowfullscreen></iframe>
+            <div class="desc">${data.desc}</div>
+          </div>`;
+      }
+      slider.innerHTML += element;
+      count++;
+    });
+
+    if (count === 0) {
+      for (let i = 0; i < 10; i++) {
+        slider.innerHTML += `
+          <div class="slider-item">
+            <div class="desc">Waiting for Live Photos...</div>
+          </div>`;
+      }
+      slider.classList.add('animate');
+    } else if (count >=1) {
+      slider.classList.add('animate');
+    } else {
+      slider.classList.remove('animate');
+    }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,
+    once: true
+  });
+</script>
+<script>
+  document.getElementById('menu-toggle').addEventListener('click', function() {
+    document.getElementById('nav-links').classList.toggle('show');
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinks = document.getElementById('nav-links');
+
+    menuToggle.addEventListener('click', function() {
+      navLinks.classList.toggle('show');
+    });
+
+    // Dropdown click handler for mobile
+    const dropdownLinks = document.querySelectorAll('.dropdown > a');
+    dropdownLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+          e.preventDefault();  // Stop navigation
+          const dropdownMenu = this.nextElementSibling;
+          dropdownMenu.classList.toggle('show');
+        }
+      });
+    });
+
+  });
+</script>
+
+
+
+<footer style="
+  background: linear-gradient(to right, #3f51b5, #2196f3);
+  color: white;
+  text-align: center;
+  padding: 20px 10px;
+  font-family: Arial, sans-serif;
+">
+
+  <div style="margin-bottom: 10px;">
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/techsage._?igsh=OGx5aTUwbDA3d3Rm" target="_blank" style="color: white; margin: 0 15px; text-decoration: none;">
+      <i class="fab fa-instagram fa-2x"></i>
+    </a>
+
+    <!-- YouTube -->
+    <a href="https://youtube.com/@techsage24?si=x2rXGgPtvz6VvcjB" target="_blank" style="color: white; margin: 0 15px; text-decoration: none;">
+      <i class="fab fa-youtube fa-2x"></i>
+    </a>
+
+    <!-- Phone -->
+    <a href="tel:+919344114176" style="color: white; margin: 0 15px; text-decoration: none;">
+      <i class="fas fa-phone fa-2x"></i>
+    </a>
+  </div>
+
+  <div style="font-size: 14px;">
+    Contact us: <a href="tel:+919344114176" style="color: white; text-decoration: underline;">+919344114176</a><br>
+    © 2025 XERON 2K25 . All Rights Reserved.
+    <div style="text-align: end;"> &copy;Designed by M. Ramana
+      <br>-Technical head(<b>Techsage </b>association)</div>
+  </div>
+
+</footer>
+
+</body>
+</html>

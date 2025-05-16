@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Xeron Admin Dashboard</title>
+</head>
+<body>
+  <h2>Welcome Admin</h2>
+  <div id="adminContent">Loading dashboard...</div>
+  <button onclick="logout()">Logout</button>
+
+  <script>
+    if (localStorage.getItem("isAdmin") !== "true") {
+      window.location.href = "admin.html";
+    }
+
+    document.getElementById("adminContent").innerText = "Dashboard loaded. You can now edit announcements, prize winners, etc.";
+
+    function logout() {
+      localStorage.removeItem("isAdmin");
+      window.location.href = "admin.html";
+    }
+  </script>
+</body>
+</html>
